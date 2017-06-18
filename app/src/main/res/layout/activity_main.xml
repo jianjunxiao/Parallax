@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.xiao.parallax.custom.ParallaxScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scroll_view_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.xiao.parallax.activity.MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+        <Button
+            android:id="@+id/btn_scroll_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="goScrollView"
+            android:text="ScrollView"/>
+
+        <Button
+            android:id="@+id/btn_recycler_view_linear"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:onClick="goRecyclerView"
+            android:text="RecyclerView(LinearLayoutManager)"/>
+
+        <Button
+            android:id="@+id/btn_recycler_view_gird"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:onClick="goRecyclerViewGrid"
+            android:text="RecyclerView(GridLayoutManager)"/>
+
+    </LinearLayout>
+</com.xiao.parallax.custom.ParallaxScrollView>
