@@ -160,7 +160,7 @@ public class ParallaxRecyclerView extends RecyclerView {
                 break;
             }
         }
-        return true;
+        return super.onTouchEvent(event);
     }
 
     private boolean isScrollToTop() {
