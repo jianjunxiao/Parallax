@@ -160,7 +160,7 @@ public class ParallaxScrollView extends ScrollView {
                 break;
             }
         }
-        return super.onTouchEvent(event);
+        return true;
     }
 
     private boolean isScrollToTop() {
