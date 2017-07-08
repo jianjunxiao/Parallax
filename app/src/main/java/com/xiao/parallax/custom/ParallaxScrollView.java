@@ -113,6 +113,7 @@ public class ParallaxScrollView extends ScrollView {
                     }
                     mScale = calculateRate(mDistance);
                     pull(mScale);
+                    return true;
                 } else if (!isScrollToTop() && isScrollToBottom()) {
                     // 在底部不在顶部
                     mDistance = mInitialMotionY - y;
@@ -121,6 +122,7 @@ public class ParallaxScrollView extends ScrollView {
                     }
                     mScale = calculateRate(mDistance);
                     push(mScale);
+                    return true;
                 } else if (isScrollToTop() && isScrollToBottom()) {
                     // 在底部也在顶部
                     mDistance = y - mInitialMotionY;
@@ -131,11 +133,11 @@ public class ParallaxScrollView extends ScrollView {
                         mScale = calculateRate(-mDistance);
                         push(mScale);
                     }
+                    return true;
                 } else {
                     // 不在底部也不在顶部
                     return super.onTouchEvent(event);
                 }
-                break;
             }
             case MotionEventCompat.ACTION_POINTER_DOWN:
                 mActivePointerId = event.getPointerId(MotionEventCompat.getActionIndex(event));
@@ -143,7 +145,8 @@ public class ParallaxScrollView extends ScrollView {
             case MotionEventCompat.ACTION_POINTER_UP:
                 onSecondaryPointerUp(event);
                 break;
-            case MotionEvent.ACTION_UP: {
+            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_CANCEL: {
                 if (isScrollToTop() && !isScrollToBottom()) {
                     animateRestore(true);
                 } else if (!isScrollToTop() && isScrollToBottom()) {
@@ -160,7 +163,7 @@ public class ParallaxScrollView extends ScrollView {
                 break;
             }
         }
-        return true;
+        return super.onTouchEvent(event);
     }
 
     private boolean isScrollToTop() {

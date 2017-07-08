@@ -113,6 +113,7 @@ public class ParallaxRecyclerView extends RecyclerView {
                     }
                     mScale = calculateRate(mDistance);
                     pull(mScale);
+                    return true;
                 } else if (!isScrollToTop() && isScrollToBottom()) {
                     // 在底部不在顶部
                     mDistance = mInitialMotionY - y;
@@ -121,6 +122,7 @@ public class ParallaxRecyclerView extends RecyclerView {
                     }
                     mScale = calculateRate(mDistance);
                     push(mScale);
+                    return true;
                 } else if (isScrollToTop() && isScrollToBottom()) {
                     // 在底部也在顶部
                     mDistance = y - mInitialMotionY;
@@ -131,11 +133,11 @@ public class ParallaxRecyclerView extends RecyclerView {
                         mScale = calculateRate(-mDistance);
                         push(mScale);
                     }
+                    return true;
                 } else {
                     // 不在底部也不在顶部
                     return super.onTouchEvent(event);
                 }
-                break;
             }
             case MotionEventCompat.ACTION_POINTER_DOWN:
                 mActivePointerId = event.getPointerId(MotionEventCompat.getActionIndex(event));
@@ -143,7 +145,8 @@ public class ParallaxRecyclerView extends RecyclerView {
             case MotionEventCompat.ACTION_POINTER_UP:
                 onSecondaryPointerUp(event);
                 break;
-            case MotionEvent.ACTION_UP: {
+            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_CANCEL: {
                 if (isScrollToTop() && !isScrollToBottom()) {
                     animateRestore(true);
                 } else if (!isScrollToTop() && isScrollToBottom()) {
@@ -155,12 +158,13 @@ public class ParallaxRecyclerView extends RecyclerView {
                         animateRestore(false);
                     }
                 } else {
+                    Log.d("ParallaxDragListener", "isTop:" + isScrollToTop() + ", isBottom:" + isScrollToBottom());
                     return super.onTouchEvent(event);
                 }
                 break;
             }
         }
-        return true;
+        return super.onTouchEvent(event);
     }
 
     private boolean isScrollToTop() {
@@ -185,52 +189,52 @@ public class ParallaxRecyclerView extends RecyclerView {
         }
     }
 
-private float calculateRate(float distance) {
-    int screenHeight = getResources().getDisplayMetrics().heightPixels;
-    float originalDragPercent = distance / screenHeight;
-    float dragPercent = Math.min(1f, originalDragPercent);
-    float rate = 2f * dragPercent - (float) Math.pow(dragPercent, 2f);
-    return 1 + rate / 5f;
-}
+    private float calculateRate(float distance) {
+        int screenHeight = getResources().getDisplayMetrics().heightPixels;
+        float originalDragPercent = distance / screenHeight;
+        float dragPercent = Math.min(1f, originalDragPercent);
+        float rate = 2f * dragPercent - (float) Math.pow(dragPercent, 2f);
+        return 1 + rate / 5f;
+    }
 
-private void animateRestore(final boolean isPullRestore) {
-    ValueAnimator animator = ValueAnimator.ofFloat(mScale, 1f);
-    animator.setDuration(300);
-    animator.setInterpolator(new DecelerateInterpolator(2f));
-    animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-        @Override
-        public void onAnimationUpdate(ValueAnimator animation) {
-            float value = (float) animation.getAnimatedValue();
-            if (isPullRestore) {
-                pull(value);
-            } else {
-                push(value);
+    private void animateRestore(final boolean isPullRestore) {
+        ValueAnimator animator = ValueAnimator.ofFloat(mScale, 1f);
+        animator.setDuration(300);
+        animator.setInterpolator(new DecelerateInterpolator(2f));
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                float value = (float) animation.getAnimatedValue();
+                if (isPullRestore) {
+                    pull(value);
+                } else {
+                    push(value);
+                }
             }
-        }
-    });
-    animator.addListener(new Animator.AnimatorListener() {
-        @Override
-        public void onAnimationStart(Animator animation) {
-            isRestoring = true;
-        }
+        });
+        animator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                isRestoring = true;
+            }
 
-        @Override
-        public void onAnimationEnd(Animator animation) {
-            isRestoring = false;
-        }
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                isRestoring = false;
+            }
 
-        @Override
-        public void onAnimationCancel(Animator animation) {
+            @Override
+            public void onAnimationCancel(Animator animation) {
 
-        }
+            }
 
-        @Override
-        public void onAnimationRepeat(Animator animation) {
+            @Override
+            public void onAnimationRepeat(Animator animation) {
 
-        }
-    });
-    animator.start();
-}
+            }
+        });
+        animator.start();
+    }
 
     private void pull(float scale) {
         this.setPivotY(0);
